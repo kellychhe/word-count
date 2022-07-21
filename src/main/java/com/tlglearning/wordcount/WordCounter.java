@@ -5,51 +5,57 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public final class WordCounter {
+public class WordCounter {
 
-  private final Map<String, Integer> counts;
+  private final Map<String, Integer> counts = new HashMap<>();
 
-  public WordCounter(String text) {
-    String[] words = splitWords(text);
-    // decorator pattern wraps around and enhances count words so that counts cannot be changed, throws an exception
-    counts = Collections.unmodifiableMap(countWords(words));
-  }
+  private int totalWords;
 
   public Set<String> words() {
     return counts.keySet();
   }
 
-  public int getCount(String word) {
+  public int get(String word) {
     return counts.getOrDefault(word, 0);
   }
 
   public Map<String, Integer> getCounts() {
-    return counts;
+    return Collections.unmodifiableMap(counts);
   }
 
+  public void add(String text) {
+    String trimmedLine = text.trim();
+    if (!trimmedLine.isEmpty()) {
+      String[] words = splitWords(trimmedLine);
+      countWords(words);
+    }
+  }
+
+  public int size() {
+    return counts.size();
+  }
+
+  public int total() {
+    return totalWords;
+  }
   @Override
   public String toString() {
     return counts.toString();
   }
 
-  Map<String, Integer> countWords(String[] words) {
-    Map<String, Integer> counts = new HashMap<>();
-    for(String word : words){
+  void countWords(String[] words) {
+    for (String word : words) {
       // TODO check if word is already present as a key in counts
       //  if it's not present, add it to counts with value of 1
       //  otherwise, get the current value, add 1 to it, and update the map with the new value
-      if (!counts.containsKey(word)) {
-        counts.put(word, 1);
-      } else {
-        int previousCount = counts.get(word);
-        counts.put(word, previousCount + 1);
-      }
+      counts.put(word, get(word) + 1);
+      totalWords++;
     }
-    return counts;
   }
 
   String[] splitWords(String text) {
     return text
+        .trim()
         // make text all lower case characters
         .toLowerCase()
         // replace all non word characters and the underscores with a space
