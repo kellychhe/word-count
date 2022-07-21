@@ -56,11 +56,8 @@ public class WordCounter {
   String[] splitWords(String text) {
     return text
         .trim()
-        // make text all lower case characters
         .toLowerCase()
-        // replace all non word characters and the underscores with a space
         .replaceAll("[\\W_]+", " ")
-        // split into a String array by splitting by whitespace/consecutive white space
         .split("\\s+");
   }
 }
