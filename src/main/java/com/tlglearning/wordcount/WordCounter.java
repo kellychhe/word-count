@@ -1,9 +1,11 @@
 package com.tlglearning.wordcount;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class WordCounter {
 
@@ -14,6 +16,9 @@ public class WordCounter {
   public Set<String> words() {
     return counts.keySet();
   }
+
+  private static final Set<String> BORING_WORDS = Set.of("and", "of", "the", "in", "on", "i", "then", "than", "out", "a", "if");
+
 
   public int get(String word) {
     return counts.getOrDefault(word, 0);
@@ -43,21 +48,21 @@ public class WordCounter {
     return counts.toString();
   }
 
-  void countWords(String[] words) {
-    for (String word : words) {
-      // TODO check if word is already present as a key in counts
-      //  if it's not present, add it to counts with value of 1
-      //  otherwise, get the current value, add 1 to it, and update the map with the new value
-      counts.put(word, get(word) + 1);
-      totalWords++;
-    }
-  }
 
   String[] splitWords(String text) {
-    return text
-        .trim()
+     return text
         .toLowerCase()
-        .replaceAll("[\\W_]+", " ")
-        .split("\\s+");
+        .split("[\\W_]+");
+  }
+
+  void countWords(String[] words) {
+    Arrays
+        .stream(words)
+        .map(String::trim)
+        // .filter(s -> !s.isEmpty())
+        .filter(Predicate.not(String::isEmpty))
+        .filter(s -> !BORING_WORDS.contains(s))
+        .forEach(word -> counts.put(word, 1 + counts.getOrDefault(word,0)));
+
   }
 }
